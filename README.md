@@ -106,7 +106,7 @@ Root README.md and the two instruction adapters—[CLAUDE.md](CLAUDE.md) and [.g
  
 **How it was checked:** I ran the page in a Codespace via Live Server and tested every acceptance statement by hand, including triggering `?failSave` for AC-4 and doing a real page reload for the persistence check, recording each result in FEATURES.md's Verification table with a screenshot. I also read through app.js function by function and confirmed against context/STANDARDS.md that no `innerHTML` or `console.log` appears anywhere in the code, and that `saveEvidence` writes to localStorage before any visible state changes, which is what makes the AC-4 failure behavior correct.
  
-**Observed result / evidence:** All seven acceptance statements plus the persistence check are recorded as PASS in [FEATURES.md](context/FEATURES.md), with AC-7 correctly marked DEFERRED since it was never implemented. See the Verification table there for the full record.
+**Observed result / evidence:** AC-1 through AC-6 and the persistence check are recorded as PASS in [FEATURES.md](context/FEATURES.md). AC-7 is correctly marked DEFERRED since it was not implemented in this build. See the Verification table there for the full record.
  
 **Instruction discovery and compliance:** Not run. I did not use a live Copilot or Claude Code session inside the repository itself to generate code against `.github/copilot-instructions.md` or `context/CLAUDE.md`; instead I did a manual standards review, confirmed by directly searching app.js and index.html for `innerHTML`, `console.log`, and inline `style=` attributes, and found none.
  
@@ -114,5 +114,10 @@ Root README.md and the two instruction adapters—[CLAUDE.md](CLAUDE.md) and [.g
 
 ## Explain, Change, Verify
 
-[Identify one function and explain its input, state changes, and output in your own words. Link a meaningful before/after code change, state its expected effect, and record the observed behavior and evidence. Explain why the change matters to your selected requirement. This paragraph is part of the existing README submission.]
-![](explain-change-verify.png)
+**The function:** `saveEvidence(proposedEvidence)` takes one input, a proposed version of the entire evidence record (the existing saved evidence plus one new or updated skill entry). It does not modify anything visible on the page itself. Instead it tries to write that proposed record to `localStorage` under the key `mgt3745.skillEvidence.v1`. If the write succeeds, it returns `true`. If it throws, whether from the simulated `?failSave` flag or a real storage failure, it sets an error message in `evidenceError`, clears `saveStatus`, and returns `false`. The caller, the form's submit handler, only updates `savedEvidence` and calls `renderSkills()` if `saveEvidence` returned `true`. That is the whole point of the function: it is the single gate between "the user typed something" and "the page shows something as evidenced."
+
+**The change:** I changed the AC-3 invalid-input error message in `app.js` from `Enter evidence containing 1–200 characters.` to `Please enter 1–200 characters of evidence.` I expected the updated wording to give the student clearer feedback when evidence is empty or outside the allowed character range. Commit: `[commit 7 (Clarify invalid evidence error message)]`.
+
+**What I observed:** After reloading the page in Codespace, I selected a skill and clicked Save with an empty evidence field. The updated error message appeared, the skill remained "Not yet evidenced," and the form did not save the empty evidence. ![Updated AC-3 error message](explain-change-verify.png)
+
+**Why it matters:** This supports AC-3 by giving the student clear feedback about the evidence requirement while preventing invalid evidence from being saved.
