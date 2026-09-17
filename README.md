@@ -4,14 +4,11 @@
 ![Status](https://img.shields.io/badge/status-in%20progress-yellow)
 ![Module](https://img.shields.io/badge/MGT%203745-HW3-051E39)
 
-> HW3, MGT 3745 O. Replace every [bracketed prompt] with your own writing.
-> Lines between `<!--` and `-->` are notes to you. They are invisible on GitHub. Delete them when done.
-> This README is the first thing an employer, a teammate, or an agent reads. It makes
-> a case for the repository. Show, then tell.
-
 ## What
 
-Replace this title and paragraph with your chosen feature and link [PROJECT.md](context/PROJECT.md) and [FEATURES.md](context/FEATURES.md). This runnable "meeting notes" application is a teaching starter, not a completed student submission. Adapt it to your researched feature and make a meaningful change you can explain.
+An accounting student picks the career they are aiming at, sees the skills that path requires, and attaches evidence from a class, project, or internship to each one. A skill with attached evidence reads as evidenced; everything else reads as not yet evidenced. The problem this comes from is in [PROJECT.md](context/PROJECT.md); the specification and verification results are in [FEATURES.md](context/FEATURES.md).
+ 
+The feature built here is F-03, the evidence log, traceable to the acceptance statement *WHEN a student attaches evidence to a skill, THE SYSTEM SHALL update its status to "evidenced."* It was chosen because an interview with a 2025 accounting graduate (INT-03) found she had no way to connect coursework to anything she could show an employer.
 
 ## See It Work
 
