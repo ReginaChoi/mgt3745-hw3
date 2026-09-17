@@ -71,14 +71,14 @@ The full verification record is in [FEATURES.md](context/FEATURES.md), under the
  
 | Criterion / EARS statement | Steps and input | Expected result | Observed result | Status | Evidence / commit |
 |---|---|---|---|---|---|
-| AC-1: WHEN the student selects a career path, THE SYSTEM SHALL display the associated skills within 2 seconds. | Select Audit or Forensic Accounting. | Associated skills appear within 2 seconds. | Skills changed immediately after selecting the career path. | PASS | `context/image.png` |
-| AC-2: WHEN the student attaches valid evidence to a selected skill, THE SYSTEM SHALL save the evidence and mark the skill as "Evidenced." | Select a skill, enter `MGT 4029`, and click Save. | Evidence is saved and the skill changes to "Evidenced." | Evidence appeared and the skill changed to "Evidenced." | PASS | context/image-1.png |
-| AC-3: WHEN the student tries to save without a skill or without evidence, THE SYSTEM SHALL show an error and preserve the entered text. | Test with no skill selected, then test with an empty evidence field. | An error appears and invalid input is not saved. | Error messages appeared and the entered text was preserved. | PASS | `context/image-2.png`, `context/image-3.png` |
-| AC-4: WHEN saving fails, THE SYSTEM SHALL keep the entered evidence and show the reason for failure. | Trigger a save failure using `?failSave`. | Error appears, input remains, and skill status does not change. | Save error appeared, evidence text remained, and status did not change. | PASS | `context/image-4.png` |
-| AC-5: WHEN a skill has no attached evidence, THE SYSTEM SHALL display "Not yet evidenced." | Open the Audit Career path before adding evidence. | Skills without evidence show "Not yet evidenced." | All three skills showed "Not yet evidenced." | PASS | context/image-5.png |
-| AC-6: WHEN peer comparison is disabled, THE SYSTEM SHALL NOT display or access other students' data. | Check browser Local Storage after saving evidence. | Only the current student's evidence is stored. | Only the entered evidence was present; no other student data appeared. | PASS | context/image-6.png |
-| Persistence check: WHEN saved evidence exists, THE SYSTEM SHALL preserve it after reload. | Save evidence, reload the page, and check the skill. | Evidence and "Evidenced" status remain after reload. | Evidence and status remained after reload. | PASS | context/image-7.png |
-| AC-7: WHEN a career path becomes inactive, THE SYSTEM SHALL preserve previously saved evidence. | Not implemented in this build. | Existing evidence would remain if a path became inactive. | Not tested because the inactive-path rule is outside the F-03 build scope. | DEFERRED | context/ARCHITECTURE.md |
+| AC-1: WHEN the student selects a career path, THE SYSTEM SHALL display the associated skills within 2 seconds. | Select Audit or Forensic Accounting. | Associated skills appear within 2 seconds. | Skills changed immediately after selecting the career path. | PASS | ![Screenshot: AC-1](context/image.png) |
+| AC-2: WHEN the student attaches valid evidence to a selected skill, THE SYSTEM SHALL save the evidence and mark the skill as "Evidenced." | Select a skill, enter `MGT 4029`, and click Save. | Evidence is saved and the skill changes to "Evidenced." | Evidence appeared and the skill changed to "Evidenced." | PASS | ![Screenshot: AC-2](context/image-1.png) |
+| AC-3: WHEN the student tries to save without a skill or without evidence, THE SYSTEM SHALL show an error and preserve the entered text. | Test with no skill selected, then test with an empty evidence field. | An error appears and invalid input is not saved. | Error messages appeared and the entered text was preserved. | PASS | ![Screenshot: AC-3a](context/image-2.png), ![Screenshot: AC-3b](context/image-3.png) |
+| AC-4: WHEN saving fails, THE SYSTEM SHALL keep the entered evidence and show the reason for failure. | Trigger a save failure using `?failSave`. | Error appears, input remains, and skill status does not change. | Save error appeared, evidence text remained, and status did not change. | PASS | ![Screenshot: AC-4](context/image-4.png) |
+| AC-5: WHEN a skill has no attached evidence, THE SYSTEM SHALL display "Not yet evidenced." | Open the Audit Career path before adding evidence. | Skills without evidence show "Not yet evidenced." | All three skills showed "Not yet evidenced." | PASS | ![Screenshot: AC-5](context/image-5.png) |
+| AC-6: WHEN peer comparison is disabled, THE SYSTEM SHALL NOT display or access other students' data. | Check browser Local Storage after saving evidence. | Only the current student's evidence is stored. | Only the entered evidence was present; no other student data appeared. | PASS | ![Screenshot: AC-6](context/image-6.png) |
+| Persistence check: WHEN saved evidence exists, THE SYSTEM SHALL preserve it after reload. | Save evidence, reload the page, and check the skill. | Evidence and "Evidenced" status remain after reload. | Evidence and status remained after reload. | PASS | ![Screenshot: Persistence](context/image-7.png) |
+| AC-7: WHEN a career path becomes inactive, THE SYSTEM SHALL preserve previously saved evidence. | Not implemented in this build. | Existing evidence would remain if a path became inactive. | Not tested because the inactive-path rule is outside the F-03 build scope. | DEFERRED | [`context/ARCHITECTURE.md`](context/ARCHITECTURE.md) |
 
 </details>
 
@@ -100,19 +100,17 @@ Root README.md and the two instruction adapters—[CLAUDE.md](CLAUDE.md) and [.g
 
 ## AI Use
 
-**Tool and task delegated:** [Which parts a tool drafted: e.g. "Copilot drafted render() and the CSS."]
-
-**Why:** [The reason it made sense to delegate that part rather than write it.]
-
-**How it was checked:** [What you inspected, what you changed, what you caught. "Replaced innerHTML with textContent" is the kind of sentence that belongs here.]
-
-**Observed result / evidence:** [What the checks actually showed; link the relevant verification row, code change, or other evidence. Do not invent a run.]
-
-If no AI assistance was used, say so and describe your independent check. Full Delegation Decision Records begin at HW5; this lightweight record is sufficient here.
-
-**Instruction discovery and compliance:** [Record the tool and mode, which instruction adapter it discovered, and the reference or diagnostic evidence. Separately report whether one generated change followed the applicable standards. If no live AI tool is available, write “not run” and record a manual standards review.]
-
-**Actual hours on this assignment (optional):** [A number, if you choose to report it. The amount or omission does not affect points; the AI-use record does.]
+**Tool and task delegated:** I used Claude throughout this assignment. Claude drafted the initial gate table and ADR-001 in ARCHITECTURE.md, the split test reasoning in STANDARDS.md, and the first version of index.html, styles.css, and app.js, built to my HW2 FEATURES.md specification for F-03.
+ 
+**Why:** I am a first-time coder, and the gate itself scores AI-assisted builds low on inspectability for exactly that reason, I needed a starting structure I could then read, test, and hold myself accountable for, rather than a specification I could not act on within a one-week deadline.
+ 
+**How it was checked:** I ran the page in a Codespace via Live Server and tested every acceptance statement by hand, including triggering `?failSave` for AC-4 and doing a real page reload for the persistence check, recording each result in FEATURES.md's Verification table with a screenshot. I also read through app.js function by function and confirmed against context/STANDARDS.md that no `innerHTML` or `console.log` appears anywhere in the code, and that `saveEvidence` writes to localStorage before any visible state changes, which is what makes the AC-4 failure behavior correct.
+ 
+**Observed result / evidence:** All seven acceptance statements plus the persistence check are recorded as PASS in [FEATURES.md](context/FEATURES.md), with AC-7 correctly marked DEFERRED since it was never implemented. See the Verification table there for the full record.
+ 
+**Instruction discovery and compliance:** Not run. I did not use a live Copilot or Claude Code session inside the repository itself to generate code against `.github/copilot-instructions.md` or `context/CLAUDE.md`; instead I did a manual standards review, confirmed by directly searching app.js and index.html for `innerHTML`, `console.log`, and inline `style=` attributes, and found none.
+ 
+**Actual hours on this assignment:** 14 hours
 
 ## Explain, Change, Verify
 
