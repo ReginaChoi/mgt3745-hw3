@@ -147,7 +147,7 @@
     }
 
     if (characterCount < 1 || characterCount > 200) {
-      evidenceError.textContent = 'Enter evidence containing 1–200 characters.';
+      evidenceError.textContent = 'Please enter 1–200 characters of evidence.';
       evidenceInput.setAttribute('aria-invalid', 'true');
       saveStatus.textContent = '';
       evidenceInput.focus();

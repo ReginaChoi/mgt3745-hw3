@@ -115,3 +115,4 @@ Root README.md and the two instruction adapters—[CLAUDE.md](CLAUDE.md) and [.g
 ## Explain, Change, Verify
 
 [Identify one function and explain its input, state changes, and output in your own words. Link a meaningful before/after code change, state its expected effect, and record the observed behavior and evidence. Explain why the change matters to your selected requirement. This paragraph is part of the existing README submission.]
+![](explain-change-verify.png)
