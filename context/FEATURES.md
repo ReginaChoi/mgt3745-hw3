@@ -52,6 +52,14 @@ Platform, data, privacy, scope, and relevant limits: this is a tracking system, 
 
 | Criterion | Steps and input | Expected result | Observed result | Status | Evidence / commit |
 |---|---|---|---|---|---|
-| Your selected ID | Reproducible procedure | Before running | Actual observation | PASS / FAIL / CANNOT TEST / DEFERRED | Link |
+| AC-1 | Load the page. Select each career path in the dropdown in turn. | The skill list updates to that path's skills, visibly within 2 seconds. | | | |
+| AC-2 | Select a path, select a skill, type valid evidence text (1 to 200 characters), click Save evidence. | The skill's status changes from "Not yet evidenced" to "Evidenced" and the entered text appears under it. | | | |
+| AC-3a | Leave the skill dropdown on "Choose a skill," type some evidence text, click Save evidence. | An error message appears asking to choose a skill first; the typed text stays in the input. | | | |
+| AC-3b | Select a skill, leave the evidence input empty, click Save evidence. | An error message appears asking for 1 to 200 characters; the input stays empty as entered. | | | |
+| AC-4 | Open the page with `?failSave` in the URL. Select a path and skill, type evidence, click Save evidence. | A save error appears, the typed text remains in the input, and the skill's status does not change to evidenced. | | | |
+| AC-5 | Load a path with no evidence yet attached to any of its skills. | Every skill on that path reads "Not yet evidenced." | | | |
+| AC-6 | Inspect the rendered page and the stored data (Application tab, Local Storage) after saving evidence. | Only the current browser's own evidence is present; no other student's data is displayed anywhere, since none is fetched from any other source. | | | |
+| Persistence (supports AC-2, not a separate acceptance statement) | Save evidence for a skill, then reload the page (not just re-select the path). | The previously saved evidence and "Evidenced" status are still present after reload. | | | |
+| AC-7 | n/a | n/a | Not implemented; no UI exists to mark a career path inactive in HW3. | DEFERRED (ADR-001) | ADR-001, Consequences |
 
 Cover a normal action, relevant invalid input, and persistence or failure. Classify unselected requirements separately. Record actual outcomes; all-PASS is acceptable with evidence.

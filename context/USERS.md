@@ -28,7 +28,7 @@ Evidence that confirms, challenges, or leaves the framing uncertain: Shows even 
 ### INT-03
 Participant code / relevant circumstance / date: INT-03 / Interview with a 2025 accounting graduate (managerial and financial accounting) about her transition from student to job seeker / 9/15/2026
 
-What happened and the participant's workaround: She wanted a career in audit and is currently unemployed. She described having no method for figuring out which skills to develop and said she was never exposed to real-world examples or internships. She did not track her skills or have relevant work experience to point to when applying for jobs. There was no workaround; she simply didn't do it.
+What happened and the participant's workaround: She wanted a career in audit and is currently unemployed. She described having no method for figuring out which skills to develop and said she was never exposed to real-world examples or internships. She did not track her skills and said she had no internship experience coming out of school to point to when applying for jobs. There was no workaround; she simply didn't do it.
 
 What was reported, what you observed, and what you infer: Three things surprised me. First, she said she never thought about tracking skills at all, so the gap isn't a bad tool, it's that the activity never occurred to her. Second, when I asked whether AI changed how she prepared or how she saw accounting jobs, she said no, flatly, which cuts against the premise I started from in HW1. Third, the gap she actually named was experience, not skills: in hindsight she should have gotten at least one internship, because she left school with none. She also said coming out of Georgia Tech was not as useful in the job search as she expected.
 
