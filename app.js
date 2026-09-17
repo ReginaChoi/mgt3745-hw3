@@ -1,90 +1,173 @@
 (() => {
   'use strict';
 
-  const storageKey = 'mgt3745.notes.v617';
-  const noteForm = document.querySelector('#note-form');
-  const noteInput = document.querySelector('#note-input');
-  const noteList = document.querySelector('#note-list');
-  const noteError = document.querySelector('#note-error');
-  const saveStatus = document.querySelector('#save-status');
-  const emptyState = document.querySelector('#empty-state');
-  // The query switch enables a repeatable classroom failure without filling real storage.
-  const simulateFailedSave = new URLSearchParams(window.location.search).has('failSave');
-  let notes = loadNotes();
+  const storageKey = 'mgt3745.skillEvidence.v1';
 
-  function loadNotes() {
+  // Paths and skills are hard-coded for HW3. FEATURES.md requires this list to be
+  // editable, which a stored or fetched list would satisfy; see ADR-001.
+  const careerPaths = [
+    {
+      id: 'audit',
+      name: 'Audit',
+      skills: ['Reviewing documents for missing detail', 'Applying compliance rules', 'Explaining findings to a client']
+    },
+    {
+      id: 'forensic',
+      name: 'Forensic accounting',
+      skills: ['Investigating inconsistencies', 'Building a written case', 'Reading financial statements critically']
+    },
+    {
+      id: 'government',
+      name: 'Government or IRS',
+      skills: ['Interpreting tax regulation', 'Handling confidential records', 'Documenting a decision trail']
+    }
+  ];
+
+  const pathSelect = document.querySelector('#path-select');
+  const skillSelect = document.querySelector('#skill-select');
+  const skillList = document.querySelector('#skill-list');
+  const evidenceForm = document.querySelector('#evidence-form');
+  const evidenceInput = document.querySelector('#evidence-input');
+  const evidenceError = document.querySelector('#evidence-error');
+  const saveStatus = document.querySelector('#save-status');
+
+  // Lets the save-failure acceptance statement be tested without corrupting real storage.
+  const simulateFailedSave = new URLSearchParams(window.location.search).has('failSave');
+
+  let savedEvidence = loadEvidence();
+  let selectedPathId = careerPaths[0].id;
+
+  function loadEvidence() {
     try {
       const storedText = window.localStorage.getItem(storageKey);
-      const parsed = storedText === null ? [] : JSON.parse(storedText);
-      if (!Array.isArray(parsed) || parsed.some(note => typeof note !== 'string')) {
+      const parsed = storedText === null ? {} : JSON.parse(storedText);
+      const isPlainObject = typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed);
+      if (!isPlainObject || Object.values(parsed).some(entry => typeof entry !== 'string')) {
         throw new Error('Unexpected stored data');
       }
       return parsed;
     } catch {
-      saveStatus.textContent = 'Saved notes could not be read. Original storage was left unchanged. A successful new save will replace it.';
-      return [];
+      saveStatus.textContent = 'Saved evidence could not be read. Your stored data was left unchanged; the next successful save will replace it.';
+      return {};
     }
   }
 
-  function saveNotes(nextNotes) {
+  function saveEvidence(proposedEvidence) {
     try {
       if (simulateFailedSave) throw new Error('Simulated write failure');
-      // Persist the proposed state before changing the visible state or clearing input.
-      window.localStorage.setItem(storageKey, JSON.stringify(nextNotes));
+      // Persist before changing visible state, so a failure never shows a save that did not happen.
+      window.localStorage.setItem(storageKey, JSON.stringify(proposedEvidence));
       return true;
     } catch {
-      noteError.textContent = 'Could not save. Your text is still here. Try again when storage is available.';
+      evidenceError.textContent = 'Could not save. Your text is still here. Try again when storage is available.';
       saveStatus.textContent = '';
       return false;
     }
   }
 
-  function renderNotes() {
-    noteList.replaceChildren();
-    emptyState.hidden = notes.length > 0;
-    notes.forEach((note, index) => {
-      const listItem = document.createElement('li');
-      const noteText = document.createElement('span');
-      noteText.textContent = note;
-      const deleteButton = document.createElement('button');
-      deleteButton.type = 'button';
-      deleteButton.textContent = 'Delete';
-      deleteButton.setAttribute('aria-label', `Delete note ${index + 1}: ${note}`);
-      deleteButton.addEventListener('click', () => {
-        const nextNotes = notes.filter((entry, entryIndex) => entryIndex !== index);
-        if (!saveNotes(nextNotes)) return;
-        notes = nextNotes;
-        noteError.textContent = '';
-        renderNotes();
-        saveStatus.textContent = 'Note deleted.';
-        noteInput.focus();
-      });
-      listItem.append(noteText, deleteButton);
-      noteList.append(listItem);
+  function findPath(pathId) {
+    return careerPaths.find(path => path.id === pathId);
+  }
+
+  function evidenceKey(pathId, skillName) {
+    return `${pathId}::${skillName}`;
+  }
+
+  function renderPathOptions() {
+    careerPaths.forEach(path => {
+      const option = document.createElement('option');
+      option.value = path.id;
+      option.textContent = path.name;
+      pathSelect.append(option);
     });
   }
 
-  noteForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const candidate = noteInput.value.trim();
-    const characterCount = Array.from(candidate).length;
-    if (characterCount < 1 || characterCount > 200) {
-      noteError.textContent = 'Enter a note containing 1–200 characters.';
-      noteInput.setAttribute('aria-invalid', 'true');
-      saveStatus.textContent = '';
-      noteInput.focus();
-      return;
-    }
-    noteInput.removeAttribute('aria-invalid');
-    noteError.textContent = '';
-    const nextNotes = [...notes, candidate];
-    if (!saveNotes(nextNotes)) return;
-    notes = nextNotes;
-    renderNotes();
-    noteInput.value = '';
-    noteInput.focus();
-    saveStatus.textContent = 'Note saved in this browser.';
+  function renderSkills() {
+    const currentPath = findPath(selectedPathId);
+
+    skillList.replaceChildren();
+    skillSelect.replaceChildren();
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose a skill';
+    skillSelect.append(placeholder);
+
+    currentPath.skills.forEach(skillName => {
+      const storedText = savedEvidence[evidenceKey(selectedPathId, skillName)];
+
+      const listItem = document.createElement('li');
+
+      const nameElement = document.createElement('span');
+      nameElement.className = 'skill-name';
+      nameElement.textContent = skillName;
+
+      const statusElement = document.createElement('span');
+      statusElement.className = 'skill-status';
+      statusElement.dataset.state = storedText ? 'evidenced' : 'not-evidenced';
+      statusElement.textContent = storedText ? 'Evidenced' : 'Not yet evidenced';
+
+      listItem.append(nameElement, statusElement);
+
+      if (storedText) {
+        const evidenceElement = document.createElement('p');
+        evidenceElement.className = 'skill-evidence';
+        evidenceElement.textContent = storedText;
+        listItem.append(evidenceElement);
+      }
+
+      skillList.append(listItem);
+
+      const option = document.createElement('option');
+      option.value = skillName;
+      option.textContent = skillName;
+      skillSelect.append(option);
+    });
+  }
+
+  pathSelect.addEventListener('change', () => {
+    selectedPathId = pathSelect.value;
+    evidenceError.textContent = '';
+    saveStatus.textContent = '';
+    renderSkills();
   });
 
-  renderNotes();
+  evidenceForm.addEventListener('submit', event => {
+    event.preventDefault();
+
+    const chosenSkill = skillSelect.value;
+    const candidate = evidenceInput.value.trim();
+    const characterCount = Array.from(candidate).length;
+
+    if (chosenSkill === '') {
+      evidenceError.textContent = 'Choose a skill before saving.';
+      saveStatus.textContent = '';
+      skillSelect.focus();
+      return;
+    }
+
+    if (characterCount < 1 || characterCount > 200) {
+      evidenceError.textContent = 'Enter evidence containing 1–200 characters.';
+      evidenceInput.setAttribute('aria-invalid', 'true');
+      saveStatus.textContent = '';
+      evidenceInput.focus();
+      return;
+    }
+
+    evidenceInput.removeAttribute('aria-invalid');
+    evidenceError.textContent = '';
+
+    const proposedEvidence = { ...savedEvidence, [evidenceKey(selectedPathId, chosenSkill)]: candidate };
+    if (!saveEvidence(proposedEvidence)) return;
+
+    savedEvidence = proposedEvidence;
+    renderSkills();
+    evidenceInput.value = '';
+    skillSelect.value = '';
+    evidenceInput.focus();
+    saveStatus.textContent = `Evidence saved. ${chosenSkill} is now evidenced.`;
+  });
+
+  renderPathOptions();
+  renderSkills();
 })();

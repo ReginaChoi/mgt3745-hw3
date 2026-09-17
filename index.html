@@ -3,25 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meeting notes | MGT 3745 starter</title>
+  <title>Skill evidence log | MGT 3745</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
 <body>
   <main>
-    <h1>Meeting notes</h1>
-    <p>Keep short notes in this browser. Use fictional, non-sensitive information.</p>
-    <form id="note-form" novalidate>
-      <label for="note-input">New note</label>
-      <p id="note-help">Enter 1–200 characters. Notes stay in this browser profile and site only.</p>
-      <input id="note-input" name="note" type="text" aria-describedby="note-help note-error" autocomplete="off">
-      <button type="submit">Save note</button>
-      <p id="note-error" role="alert"></p>
+    <h1>Skill evidence log</h1>
+    <p>Pick the accounting career you are aiming at, then attach evidence to the skills it needs. Everything stays in this browser.</p>
+ 
+    <label for="path-select">Career path</label>
+    <select id="path-select" name="path"></select>
+ 
+    <h2>Skills for this path</h2>
+    <ul id="skill-list" aria-label="Skills for the selected career path"></ul>
+ 
+    <h2>Attach evidence</h2>
+    <form id="evidence-form" novalidate>
+      <label for="skill-select">Skill</label>
+      <select id="skill-select" name="skill" aria-describedby="evidence-error"></select>
+ 
+      <label for="evidence-input">What you did</label>
+      <p id="evidence-help">A class, project, or internship task that shows this skill. 1–200 characters.</p>
+      <input id="evidence-input" name="evidence" type="text" autocomplete="off"
+             aria-describedby="evidence-help evidence-error">
+ 
+      <button type="submit">Save evidence</button>
+      <p id="evidence-error" role="alert"></p>
     </form>
+ 
     <p id="save-status" role="status" aria-live="polite"></p>
-    <h2>Saved notes</h2>
-    <p id="empty-state">No saved notes yet.</p>
-    <ul id="note-list" aria-label="Saved notes"></ul>
   </main>
 </body>
 </html>
+ 
