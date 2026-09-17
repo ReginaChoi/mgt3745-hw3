@@ -50,7 +50,7 @@ Weights were fixed before any option was scored. Inspectability carries the high
 **Decision:** I will hand-build the evidence log as three static files with localStorage persistence, implementing Behavior steps 1 through 5, and defer the in-progress state, the export, and the inactive-path rule.
  
 **Consequences and revisit trigger:** 
-Easier: I can read and explain every line, so my verification section reports what I actually observed rather than what I hoped. Switching is nearly free, since three files with no dependencies can be discarded. Fit to spec is exact, because I wrote it against the spec.
+Easier: I can read and explain every line, so my verification section reports what I actually observed rather than what I hoped. Switching is nearly free, since three files with no dependencies can be discarded. Fit to the selected F-03 feature is strong because I wrote the implementation directly against the feature's required behavior. The deferred states and export are outside this HW3 build slice.
  
 Harder, and what this fails to do: localStorage is per-browser and per-profile, so a student who uses a lab machine and then a laptop sees two unrelated records, and clearing browser data destroys everything with no recovery. That is a real failure of the tool's actual purpose, since evidence a student cannot retrieve at interview time is not evidence. The build also does not address what INT-03 identified as her real gap. She did not lack a way to record experience; she lacked the internship. A tool that logs evidence cannot create any, and no architecture choice fixes that.
  

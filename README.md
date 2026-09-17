@@ -1,6 +1,5 @@
-# [Project Name]
+# [SkillPath]
 
-<!-- Badges are optional but cheap. shields.io generates them from a URL. -->
 ![Status](https://img.shields.io/badge/status-in%20progress-yellow)
 ![Module](https://img.shields.io/badge/MGT%203745-HW3-051E39)
 
@@ -12,15 +11,9 @@ The feature built here is F-03, the evidence log, traceable to the acceptance st
 
 ## See It Work
 
-<!-- REQUIRED: at least one image or GIF of the feature meeting an EARS statement.
-     Put media in the docs/ folder. Keep GIFs under 5 MB.
-     Record: macOS Cmd+Shift+5, Windows Win+Alt+R or Snipping Tool video. Convert at ezgif.com.
-     Markdown image syntax: -->
-Put a screenshot or GIF under docs/ and link it here with descriptive alt text. Explain which acceptance criterion it demonstrates.
-![Saving an entry and seeing it appear in the list](docs/demo.gif)
-
-<!-- HTML gives you sizing control markdown does not: -->
-<!-- <img src="docs/screenshot.png" width="480" alt="The entry list after three saves"> -->
+![Saving coursework evidence and seeing the skill become evidenced](docs/evidence-log.png)
+ 
+This screenshot demonstrates AC-2: after I select a skill and save valid evidence, the skill changes from "Not yet evidenced" to "Evidenced" and the saved evidence appears underneath it.
 
 ## How to Run
 
@@ -34,51 +27,58 @@ This project runs inside a GitHub Codespace. No local install.
 
 If Live Server is unavailable, run `node scripts/serve.mjs` in the terminal, then open port 5500 from the Ports tab. Refresh the browser after edits when using this fallback; stop it with **Ctrl+C**. Run only one server on port 5500 at a time. The fallback also works locally with Node 22 or later. Serve over HTTP rather than opening `index.html` through `file://`.
 
-<!-- The .devcontainer folder installs Live Server automatically. If the right-click option
-     is missing, wait for the extension to finish installing (bottom-left status bar), or run
-     `python3 -m http.server 5500` in the terminal and open port 5500 from the Ports tab.
-     Edit these steps if your feature needs anything more. -->
-
 ## How It Works
-
-<!-- GitHub renders Mermaid natively inside a ```mermaid fence. -->
 
 ```mermaid
 flowchart TD
- A[Page opens] --> B[loadNotes: read and validate localStorage]
-  B --> C[renderNotes: draw current state]
-  D[User submits entry] --> E{Trimmed input is 1 to 200 characters?}
-  E -->|No| F[Show validation error and keep input]
-  E -->|Yes| G[Create proposed notes array]
-  G --> H{saveNotes: storage write succeeds?}
-  H -->|No| I[Show save error; keep input and current list]
-  H -->|Yes| J[Update in-memory notes]
-  J --> K[renderNotes: redraw list]
-  K --> L[Clear input and announce saved]
+  A[Page opens] --> B[loadEvidence: read and validate localStorage]
+  B --> C[renderPathOptions and renderSkills: draw skill list for the selected path]
+  D[Student selects a career path] --> C
+  E[Student selects a skill and types evidence] --> F{Skill chosen and text 1 to 200 characters?}
+  F -->|No skill chosen| G[Show 'choose a skill' error; keep typed text]
+  F -->|Empty or too long| H[Show length error; keep typed text]
+  F -->|Yes| I[Build proposed evidence object]
+  I --> J{saveEvidence: localStorage write succeeds?}
+  J -->|No| K[Show save error; keep input; skill stays not yet evidenced]
+  J -->|Yes| L[Update in-memory savedEvidence]
+  L --> C
+  C --> M[Clear input; announce evidence saved]
 ```
 
-This diagram describes the starter's load-and-add flow. Update it to match your implementation. In `app.js`, `loadNotes` reads stored data, `saveNotes` attempts to persist a proposed state, and `renderNotes` draws the current state using `textContent` for user text. The submit handler validates input and updates the visible state only after a successful save. Delete also saves the proposed state before redrawing. A read failure shows a warning and starts with an empty in-memory list; it leaves the original storage unchanged until a successful new save replaces it.
+This diagram describes the built F-03 feature, not the original starter's notes app. In `app.js`, `loadEvidence` reads and validates stored data from localStorage on page load, returning an empty record rather than crashing if the stored data is missing or malformed. `renderPathOptions` fills the career-path dropdown once; `renderSkills` redraws the skill list and the skill dropdown whenever the selected path changes or evidence is saved, reading each skill's status from `savedEvidence`.
+ 
+The form's submit handler validates in order: it rejects an empty skill selection first, then rejects text outside 1 to 200 characters, showing a distinct error message for each case and leaving the typed text in place either way. Only after both checks pass does it build a proposed evidence object and call `saveEvidence`, which persists to localStorage before any visible state changes. If the write throws (including the `?failSave` simulated failure used for AC-4), the function shows an error and returns `false`; the submit handler then returns early, so `savedEvidence` and the rendered list are never updated on a failed save. This ordering, write first, then update visible state, is why a failed save cannot show evidence that was never actually stored.
 
 ## Status
 
 | Area | State | Why |
-|------|-------|-----|
-| Save and display | [Works / Partial / Broken / Not tested] | [Link your verification evidence] |
-| Invalid input | [Works / Partial / Broken / Not tested] | [Link your verification evidence] |
-| Data survives reload / storage failure | [Works / Partial / Broken / Not tested] | [Link your verification evidence] |
-| Multi-user sync (starter limitation) | Deferred | Browser-local storage does not provide sync. Explain your own scope and decision in [ADR-001](context/ARCHITECTURE.md). |
+|---|---|---|
+| Career path and skill display | Works | AC-1 passed |
+| Evidence save and display | Works | AC-2 passed |
+| Invalid input | Works | AC-3 passed |
+| Save failure handling | Works | AC-4 passed |
+| Persistence after reload | Works | Persistence check passed |
+| Peer comparison | Deferred/not included | Outside F-03 scope |
+| Inactive career paths | Deferred | ADR-001 |
 
 
 <details>
 <summary>Verification results (click to expand)</summary>
 
-Keep the full verification record in [FEATURES.md](context/FEATURES.md). Summarize it here or link directly to its Verification section; keep both consistent.
+## Verification Summary
 
+The full verification record is in [FEATURES.md](context/FEATURES.md), under the Verification section.
+ 
 | Criterion / EARS statement | Steps and input | Expected result | Observed result | Status | Evidence / commit |
 |---|---|---|---|---|---|
-| [Your selected criterion ID] | [Reproducible procedure] | [State before testing] | [What actually happened] | [PASS / FAIL / CANNOT TEST / DEFERRED] | [Link] |
-
-Cover a normal action, relevant invalid input, and persistence or failure. PASS requires observed results that match expectations; all-PASS is acceptable with evidence. For CANNOT TEST, state the limitation and next step. Identify unselected requirements separately; DEFERRED does not waive the required HW3 feature. A screenshot alone cannot establish reload or storage-failure behavior.
+| AC-1: WHEN the student selects a career path, THE SYSTEM SHALL display the associated skills within 2 seconds. | Select Audit or Forensic Accounting. | Associated skills appear within 2 seconds. | Skills changed immediately after selecting the career path. | PASS | `context/image.png` |
+| AC-2: WHEN the student attaches valid evidence to a selected skill, THE SYSTEM SHALL save the evidence and mark the skill as "Evidenced." | Select a skill, enter `MGT 4029`, and click Save. | Evidence is saved and the skill changes to "Evidenced." | Evidence appeared and the skill changed to "Evidenced." | PASS | context/image-1.png |
+| AC-3: WHEN the student tries to save without a skill or without evidence, THE SYSTEM SHALL show an error and preserve the entered text. | Test with no skill selected, then test with an empty evidence field. | An error appears and invalid input is not saved. | Error messages appeared and the entered text was preserved. | PASS | `context/image-2.png`, `context/image-3.png` |
+| AC-4: WHEN saving fails, THE SYSTEM SHALL keep the entered evidence and show the reason for failure. | Trigger a save failure using `?failSave`. | Error appears, input remains, and skill status does not change. | Save error appeared, evidence text remained, and status did not change. | PASS | `context/image-4.png` |
+| AC-5: WHEN a skill has no attached evidence, THE SYSTEM SHALL display "Not yet evidenced." | Open the Audit Career path before adding evidence. | Skills without evidence show "Not yet evidenced." | All three skills showed "Not yet evidenced." | PASS | context/image-5.png |
+| AC-6: WHEN peer comparison is disabled, THE SYSTEM SHALL NOT display or access other students' data. | Check browser Local Storage after saving evidence. | Only the current student's evidence is stored. | Only the entered evidence was present; no other student data appeared. | PASS | context/image-6.png |
+| Persistence check: WHEN saved evidence exists, THE SYSTEM SHALL preserve it after reload. | Save evidence, reload the page, and check the skill. | Evidence and "Evidenced" status remain after reload. | Evidence and status remained after reload. | PASS | context/image-7.png |
+| AC-7: WHEN a career path becomes inactive, THE SYSTEM SHALL preserve previously saved evidence. | Not implemented in this build. | Existing evidence would remain if a path became inactive. | Not tested because the inactive-path rule is outside the F-03 build scope. | DEFERRED | context/ARCHITECTURE.md |
 
 </details>
 
@@ -100,8 +100,6 @@ Root README.md and the two instruction adapters—[CLAUDE.md](CLAUDE.md) and [.g
 
 ## AI Use
 
-<!-- A Delegation Decision Record without the name. From HW5 this becomes a formal DDR. -->
-
 **Tool and task delegated:** [Which parts a tool drafted: e.g. "Copilot drafted render() and the CSS."]
 
 **Why:** [The reason it made sense to delegate that part rather than write it.]
@@ -119,11 +117,3 @@ If no AI assistance was used, say so and describe your independent check. Full D
 ## Explain, Change, Verify
 
 [Identify one function and explain its input, state changes, and output in your own words. Link a meaningful before/after code change, state its expected effect, and record the observed behavior and evidence. Explain why the change matters to your selected requirement. This paragraph is part of the existing README submission.]
-
-<!-- Things this README could also do, if they earn their place:
-     - GitHub alerts:  > [!NOTE]  > [!WARNING]  > [!TIP]
-     - Task lists:     - [x] done   - [ ] not yet
-     - Emoji:          :rocket: :white_check_mark:
-     - Footnotes:      text[^1]  ...  [^1]: the note
-     - Embedded HTML tables, <kbd>Ctrl</kbd>+<kbd>S</kbd>, <sup>, <sub>
-     None are required. A README that reads well with none of them beats one that uses all of them. -->
